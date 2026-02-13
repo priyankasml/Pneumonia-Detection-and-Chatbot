@@ -1,0 +1,35 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# IDE / Editor files
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.vscode/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+*.tmp
+
+# Model weights (optional: if you want to keep them in Git)
+# pneumonia_model.pth
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ignore anything else not related to your code
+*.bak
+*.swp
+*.old
