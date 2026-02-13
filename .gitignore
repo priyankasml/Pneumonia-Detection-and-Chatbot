@@ -5,33 +5,30 @@ __pycache__/
 *.pyd
 
 # Virtual environment
+.venv/
 venv/
 env/
 .env/
 
 # IDE / Editor files
 .idea/
+*.vscode/
 *.sublime-project
 *.sublime-workspace
-*.vscode/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Logs
+# Logs & temporary files
 *.log
 *.tmp
-
-# Model weights (optional: if you want to keep them in Git)
-# pneumonia_model.pth
+*.bak
+*.swp
+*.old
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Ignore anything else not related to your code
-*.bak
-*.swp
-*.old
-# Ignore dataset folder
+# Dataset folder (do not upload your datasets)
 dataset/
