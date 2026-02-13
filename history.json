@@ -1,0 +1,154 @@
+[
+    {
+        "filename": "person1_virus_11.jpeg",
+        "prediction": "Normal",
+        "confidence": 73.3,
+        "timestamp": "2026-02-13 23:01:38",
+        "probs": [
+            0.7330154180526733,
+            0.0012264562537893653,
+            0.26575809717178345
+        ],
+        "stage": "Healthy"
+    },
+    {
+        "filename": "IM-0007-0001.jpeg",
+        "prediction": "Normal",
+        "confidence": 66.99,
+        "timestamp": "2026-02-13 23:02:00",
+        "probs": [
+            0.6698883175849915,
+            0.008741761557757854,
+            0.3213699162006378
+        ],
+        "stage": "Healthy"
+    },
+    {
+        "filename": "IM-0007-0001.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 66.99,
+        "stage": "Moderate Infection",
+        "comment": "Bacterial pneumonia detected. Immediate medical care advised.",
+        "timestamp": "2026-02-13 23:06:39"
+    },
+    {
+        "filename": "person1_virus_7.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 76.69,
+        "stage": "Severe Infection",
+        "comment": "Bacterial pneumonia detected. Immediate medical care advised.",
+        "timestamp": "2026-02-13 23:06:54"
+    },
+    {
+        "filename": "person83_bacteria_409.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 74.97,
+        "stage": "Moderate Infection",
+        "comment": "Bacterial pneumonia detected. Immediate medical care advised.",
+        "timestamp": "2026-02-13 23:07:03"
+    },
+    {
+        "filename": "person38_virus_84.jpeg",
+        "prediction": "Bacterial Pneumonia",
+        "confidence": 61.78,
+        "stage": "Moderate Infection",
+        "comment": "Bacterial infection detected. Antibiotic treatment may be required.",
+        "timestamp": "2026-02-13 23:13:50"
+    },
+    {
+        "filename": "IM-0001-0001.jpeg",
+        "prediction": "Bacterial Pneumonia",
+        "confidence": 69.67,
+        "stage": "Moderate Infection",
+        "comment": "Bacterial infection detected. Antibiotic treatment may be required.",
+        "timestamp": "2026-02-13 23:14:11"
+    },
+    {
+        "filename": "IM-0007-0001.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 55.65,
+        "stage": "Severe Infection",
+        "comment": "Bacterial pneumonia detected. Consult a doctor.",
+        "timestamp": "13-02-2026 23:17"
+    },
+    {
+        "filename": "IM-0007-0001.jpeg",
+        "prediction": "Normal",
+        "confidence": 66.99,
+        "timestamp": "2026-02-13 23:23:48",
+        "probs": [
+            0.6698883175849915,
+            0.008741761557757854,
+            0.3213699162006378
+        ],
+        "stage": "Healthy"
+    },
+    {
+        "filename": "person11_virus_38.jpeg",
+        "prediction": "Normal",
+        "confidence": 69.68,
+        "timestamp": "2026-02-13 23:24:02",
+        "probs": [
+            0.6968481540679932,
+            0.0017578998813405633,
+            0.30139395594596863
+        ],
+        "stage": "Healthy"
+    },
+    {
+        "filename": "person1_virus_12.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 73.16,
+        "stage": "Severe Infection",
+        "comment": "Bacterial pneumonia detected. Consult doctor.",
+        "timestamp": "13-02-2026 23:34"
+    },
+    {
+        "filename": "IM-0001-0001.jpeg",
+        "prediction": "BACTERIAL",
+        "confidence": 69.67,
+        "stage": "Severe Infection",
+        "comment": "Bacterial pneumonia detected. Consult doctor.",
+        "timestamp": "13-02-2026 23:34"
+    },
+    {
+        "filename": "IM-0001-0001.jpeg",
+        "prediction": "PNEUMONIA",
+        "confidence": 75.68,
+        "stage": "Infection Detected",
+        "comment": "Pneumonia detected. Please consult a doctor.",
+        "timestamp": "14-02-2026 00:38"
+    },
+    {
+        "filename": "person1_virus_12.jpeg",
+        "prediction": "PNEUMONIA",
+        "confidence": 100.0,
+        "stage": "Infection Detected",
+        "comment": "Pneumonia detected. Please consult a doctor.",
+        "timestamp": "14-02-2026 00:38"
+    },
+    {
+        "filename": "person1_virus_12.jpeg",
+        "prediction": "PNEUMONIA",
+        "confidence": 100.0,
+        "stage": "Infection Detected",
+        "comment": "Pneumonia detected. Please consult a doctor.",
+        "timestamp": "14-02-2026 00:38"
+    },
+    {
+        "filename": "person78_bacteria_385.jpeg",
+        "prediction": "PNEUMONIA",
+        "confidence": 100.0,
+        "stage": "Infection Detected",
+        "comment": "Pneumonia detected. Please consult a doctor.",
+        "timestamp": "14-02-2026 00:38"
+    },
+    {
+        "filename": "IM-0075-0001.jpeg",
+        "prediction": "PNEUMONIA",
+        "confidence": 97.79,
+        "stage": "Infection Detected",
+        "comment": "Pneumonia detected. Please consult a doctor.",
+        "timestamp": "14-02-2026 00:39"
+    }
+]

@@ -1,0 +1,8 @@
+flask
+torch
+torchvision
+torchaudio
+pillow
+fpdf
+numpy
+matplotlib
