@@ -33,3 +33,5 @@ Thumbs.db
 *.bak
 *.swp
 *.old
+# Ignore dataset folder
+dataset/
