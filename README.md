@@ -126,7 +126,9 @@ pythonProject4/
 ├── templates/
 │ ├── index.html
 │ ├── history.html
-│ ├── chatbot.html
+│ ├── chatbot.html'
+
+
 <img width="1600" height="846" alt="image" src="https://github.com/user-attachments/assets/e1775ed2-8e8e-4b8a-8134-a7d51d63a0d0" />
 <img width="1600" height="830" alt="image" src="https://github.com/user-attachments/assets/759e4067-591b-43f1-97a6-0784b98703d1" />
 
