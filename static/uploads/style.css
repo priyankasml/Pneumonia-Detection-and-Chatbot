@@ -1,0 +1,15 @@
+body {
+    background: linear-gradient(135deg, #e0f7fa, #e1bee7);
+}
+
+.card {
+    border-radius: 15px;
+}
+
+.chat-box {
+    height: 250px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 10px;
+}

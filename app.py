@@ -1,12 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
-import torch
-import torch.nn as nn
-from torchvision import transforms, models
-from PIL import Image
-import os
+from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
 from datetime import datetime
 from io import BytesIO
-from fpdf import FPDF  # For PDF generation
+import os
+import random
+from fpdf import FPDF
+from chatbot import chatbot_response
 
 app = Flask(__name__)
 
@@ -14,93 +12,102 @@ UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Classes
-classes = ["NORMAL", "PNEUMONIA"]
-
-# ---------------- MODEL ----------------
-model = models.resnet18(weights=None)
-model.fc = nn.Linear(model.fc.in_features, 2)
-model.load_state_dict(torch.load("pneumonia_model.pth", map_location=DEVICE))
-model.to(DEVICE)
-model.eval()
-
-# ---------------- TRANSFORM ----------------
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.Grayscale(num_output_channels=3),
-    transforms.ToTensor(),
-    transforms.Normalize([0.485, 0.456, 0.406],
-                         [0.229, 0.224, 0.225])
-])
-
-# ---------------- MEMORY HISTORY ----------------
 history_data = []
+latest_prediction = None
 
-# ---------------- PREDICTION ----------------
-def predict_image(path):
-    img = Image.open(path).convert("RGB")
-    tensor = transform(img).unsqueeze(0).to(DEVICE)
-    with torch.no_grad():
-        output = model(tensor)
-        probs = torch.softmax(output, dim=1)
-        conf, pred = torch.max(probs, 1)
-    return classes[pred.item()], round(conf.item() * 100, 2)
 
-def stage_comment(result):
-    if result == "NORMAL":
-        return "Healthy", "No pneumonia detected."
-    else:
-        return "Infection Detected", "Pneumonia detected. Please consult a doctor."
+# ---------------- MOCK MODEL ----------------
+def mock_predict(path):
+    prediction = random.choice(["NORMAL", "PNEUMONIA"])
+    confidence = round(random.uniform(85, 99), 2)
+    stage = "Healthy" if prediction == "NORMAL" else "Infection Detected"
+    comment = (
+        "No signs of pneumonia."
+        if prediction == "NORMAL"
+        else "Pneumonia detected. Please consult a doctor."
+    )
+    return prediction, confidence, stage, comment
 
-# ---------------- PDF GENERATION ----------------
+
+# ---------------- PDF ----------------
 def generate_pdf(record):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Pneumonia Diagnosis Report", ln=True, align="C")
-    pdf.ln(10)
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, f"Filename: {record['filename']}", ln=True)
-    pdf.cell(0, 10, f"Disease: {record['prediction']}", ln=True)
-    pdf.cell(0, 10, f"Confidence: {record['confidence']}%", ln=True)
-    pdf.cell(0, 10, f"Stage: {record['stage']}", ln=True)
-    pdf.cell(0, 10, f"Timestamp: {record['timestamp']}", ln=True)
-    pdf.ln(10)
-    pdf.multi_cell(0, 10, f"Comments: {record.get('comment', 'N/A')}")
 
-    # Correct way to generate PDF in memory
-    pdf_bytes = pdf.output(dest='S').encode('latin1')  # returns bytes
+    pdf.set_font("Arial", "B", 18)
+    pdf.cell(0, 10, "Pneumonia AI Diagnostic Report", ln=True, align="C")
+    pdf.ln(10)
+
+    # Insert X-ray image
+    image_path = os.path.join("static/uploads", record["filename"])
+    if os.path.exists(image_path):
+        pdf.image(image_path, x=30, w=150)
+        pdf.ln(85)
+
+    pdf.set_font("Arial", size=12)
+
+    pdf.cell(0, 10, f"Patient X-ray File: {record['filename']}", ln=True)
+    pdf.cell(0, 10, f"Diagnosis: {record['prediction']}", ln=True)
+    pdf.cell(0, 10, f"Confidence Level: {record['confidence']}%", ln=True)
+    pdf.cell(0, 10, f"Stage: {record['stage']}", ln=True)
+    pdf.cell(0, 10, f"Generated On: {record['timestamp']}", ln=True)
+
+    pdf.ln(5)
+    pdf.multi_cell(0, 10,
+        "Medical Interpretation:\n"
+        "This report is generated using AI-based chest X-ray analysis. "
+        "If pneumonia is detected, it indicates possible lung infection. "
+        "Further clinical evaluation by a healthcare professional is strongly recommended."
+    )
+
+    pdf.ln(5)
+    pdf.multi_cell(0, 10,
+        "Disclaimer:\n"
+        "This AI-generated report is for educational purposes only and does not replace professional medical diagnosis."
+    )
+
+    pdf_bytes = pdf.output(dest="S").encode("latin1")
     pdf_file = BytesIO(pdf_bytes)
     pdf_file.seek(0)
     return pdf_file
 
-# ---------------- ROUTES ----------------
+# ---------------- HOME / DASHBOARD ----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-    result = confidence = stage = comment = image = None
+    global latest_prediction
+
+    uploaded_image = None
+    result = confidence = stage = comment = None
 
     if request.method == "POST":
         file = request.files.get("file")
-        if not file:
-            return redirect(url_for("index"))
 
-        image = file.filename
-        path = os.path.join(UPLOAD_FOLDER, image)
-        file.save(path)
+        if file and file.filename:
+            uploaded_image = file.filename
+            path = os.path.join(app.config["UPLOAD_FOLDER"], uploaded_image)
+            file.save(path)
 
-        result, confidence = predict_image(path)
-        stage, comment = stage_comment(result)
+            result, confidence, stage, comment = mock_predict(path)
 
-        history_data.append({
-            "filename": image,
-            "prediction": result,
-            "confidence": confidence,
-            "stage": stage,
-            "comment": comment,
-            "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M")
-        })
+            record = {
+                "filename": uploaded_image,
+                "prediction": result,
+                "confidence": confidence,
+                "stage": stage,
+                "timestamp": datetime.now().strftime("%d-%m-%Y %H:%M")
+            }
+
+            history_data.append(record)
+
+            latest_prediction = {
+                "prediction": result,
+                "confidence": confidence,
+                "stage": stage,
+                "comment": comment
+            }
+
+    normal_count = len([r for r in history_data if r["prediction"] == "NORMAL"])
+    pneumonia_count = len([r for r in history_data if r["prediction"] == "PNEUMONIA"])
 
     return render_template(
         "index.html",
@@ -108,30 +115,45 @@ def index():
         confidence=confidence,
         stage=stage,
         comment=comment,
-        uploaded_image=image,
-        history=history_data
+        uploaded_image=uploaded_image,
+        history=history_data,
+        normal_count=normal_count,
+        pneumonia_count=pneumonia_count
     )
 
+
+# ---------------- HISTORY ----------------
 @app.route("/history")
 def view_history():
     return render_template("history.html", history=history_data)
+
 
 @app.route("/clear_history", methods=["POST"])
 def clear_history():
     history_data.clear()
     return redirect(url_for("view_history"))
 
+
 @app.route("/download_pdf/<int:record_index>")
 def download_pdf(record_index):
     if 0 <= record_index < len(history_data):
-        record = history_data[record_index]
-        pdf_file = generate_pdf(record)
-        return send_file(
-            pdf_file,
-            download_name=f"Report_{record['filename'].split('.')[0]}.pdf",
-            as_attachment=True
-        )
+        pdf_file = generate_pdf(history_data[record_index])
+        return send_file(pdf_file, download_name="Report.pdf", as_attachment=True)
     return redirect(url_for("view_history"))
+
+
+# ---------------- CHATBOT ----------------
+@app.route("/chatbot")
+def chatbot_page():
+    return render_template("chatbot.html")
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat_api():
+    data = request.get_json()
+    reply = chatbot_response(data["message"], latest_prediction)
+    return jsonify({"reply": reply})
+
 
 if __name__ == "__main__":
     app.run(debug=True)

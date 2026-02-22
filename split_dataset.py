@@ -1,33 +1,45 @@
-# split_dataset.py
 import os
 import shutil
 
-base_dir = "dataset"
+# 🔥 YOUR REAL DATASET PATH
+original_dataset = r"D:\archive (14)\chest_xray\chest_xray"
 
-for split in ["train", "val"]:
-    pneu_dir = os.path.join(base_dir, split, "PNEUMONIA")
-    bacterial_dir = os.path.join(base_dir, split, "BACTERIAL")
-    viral_dir = os.path.join(base_dir, split, "VIRAL")
+# 🔥 Where new 3-class dataset will be created
+new_dataset = r"C:\Users\User\PycharmProjects\pythonProject4\dataset"
 
-    os.makedirs(bacterial_dir, exist_ok=True)
-    os.makedirs(viral_dir, exist_ok=True)
+for split in ["train", "val", "test"]:
 
-    for filename in os.listdir(pneu_dir):
-        src = os.path.join(pneu_dir, filename)
-        if "_bacteria_" in filename:
-            dst = os.path.join(bacterial_dir, filename)
-        elif "_virus_" in filename:
-            dst = os.path.join(viral_dir, filename)
-        else:
-            print(f"Skipping unknown file: {filename}")
-            continue
-        shutil.move(src, dst)
+    normal_path = os.path.join(original_dataset, split, "NORMAL")
+    pneumonia_path = os.path.join(original_dataset, split, "PNEUMONIA")
 
-    print(f"✅ Split complete for {split} set")
+    print(f"Processing: {split}")
 
-# Remove old combined PNEUMONIA folder
-for split in ["train", "val"]:
-    old_dir = os.path.join(base_dir, split, "PNEUMONIA")
-    if os.path.exists(old_dir):
-        shutil.rmtree(old_dir)
-        print(f"🗑 Removed old folder: {old_dir}")
+    if not os.path.exists(normal_path):
+        print(f"❌ Path not found: {normal_path}")
+        continue
+
+    os.makedirs(os.path.join(new_dataset, split, "NORMAL"), exist_ok=True)
+    os.makedirs(os.path.join(new_dataset, split, "BACTERIAL"), exist_ok=True)
+    os.makedirs(os.path.join(new_dataset, split, "VIRAL"), exist_ok=True)
+
+    # Copy NORMAL images
+    for file in os.listdir(normal_path):
+        shutil.copy(
+            os.path.join(normal_path, file),
+            os.path.join(new_dataset, split, "NORMAL", file)
+        )
+
+    # Split Pneumonia into BACTERIAL & VIRAL
+    for file in os.listdir(pneumonia_path):
+        if "bacteria" in file.lower():
+            shutil.copy(
+                os.path.join(pneumonia_path, file),
+                os.path.join(new_dataset, split, "BACTERIAL", file)
+            )
+        elif "virus" in file.lower():
+            shutil.copy(
+                os.path.join(pneumonia_path, file),
+                os.path.join(new_dataset, split, "VIRAL", file)
+            )
+
+print("\n✅ Dataset successfully split into 3 classes!")
